@@ -4,6 +4,7 @@ from datetime import datetime
 import time
 import threading
 
+
 app = Flask(__name__)
 
 logs = []
@@ -19,7 +20,7 @@ def remove_expired_logs():
         new_logs = []
         for log in logs:
             #print((log['timestamp'].replace("Z","").replace("T"," "))).timestamp()
-            datetime_obj = datetime.strptime(log['timestamp'], '%Y-%m-%d %H:%M:%S')
+            datetime_obj = datetime.strptime(log['timestamp'].replace("T"," ").replace("Z",""), '%Y-%m-%d %H:%M:%S')
             timestamp = datetime_obj.timestamp()
             #log_timestamp = float(log['timestamp'].replace(":","").replace("Z","").replace("T"," "))
             if current_time - timestamp < EXPIRATION:
@@ -36,7 +37,39 @@ threading.Thread(target=remove_expired_logs, daemon=True).start()
 @app.route('/logs', methods=['GET'])
 def get_logs():
     #remove_expired_logs()
-    return jsonify({"logs": logs})
+    service_name = request.args.get('service_name')
+    start_timestamp = request.args.get('start')
+    end_timestamp = request.args.get('end')
+
+    filtered_logs = []
+
+    #print(logs['timestamp'])
+    for log in logs:
+        datetime_obj = datetime.strptime(log['timestamp'].replace("T"," ").replace("Z",""), '%Y-%m-%d %H:%M:%S')
+        timestamp = datetime_obj.timestamp()
+
+        start_timestamp_conversion = datetime.strptime(start_timestamp.replace("T", " ").replace("Z", ""), '%Y-%m-%d %H:%M:%S').timestamp()
+        end_timestamp_conversion = datetime.strptime(end_timestamp.replace("T", " ").replace("Z", ""), '%Y-%m-%d %H:%M:%S').timestamp()
+        #print(start_timestamp_conversion)
+        #end_timestamp_conversion = 
+
+        print(timestamp)
+
+        print(f"{start_timestamp_conversion} start_timestamp")
+        print(f"{timestamp} current_timestamp")
+        print(f"{end_timestamp_conversion} end_timestamp")
+
+        print("")
+        if (not service_name or log['service_name'] == service_name) and (not start_timestamp_conversion or timestamp >= start_timestamp_conversion) and (not end_timestamp_conversion or timestamp <= end_timestamp_conversion):
+            filtered_logs.append({
+                "timestamp": log['timestamp'],
+                "message": log['message']
+            })
+
+
+    print(logs)
+    print(filtered_logs)
+    return jsonify(filtered_logs)
 
 @app.route('/logs', methods=['POST'])
 def post_logs():
@@ -46,7 +79,7 @@ def post_logs():
         return jsonify({"error": "No JSON received"}), 400
     
     service_name = new_log.get('service_name', '?')
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    timestamp = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
     message = new_log.get('message', '?')
 
     log_entry = {

@@ -18,7 +18,7 @@ def main():
     print("Hello World!")
     url = "http://127.0.0.1:5000/logs"
     payload = {"service_name": "auth-service",
-               "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%S'),
+               "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                "message": "User login successful"
                }
     response = requests.post(url, json=payload)
