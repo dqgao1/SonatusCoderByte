@@ -16,9 +16,9 @@ def post_logs():
     if not new_log:
         return jsonify({"error": "No JSON received"}), 400
     
-    service_name = data.get('service_name', '?')
+    service_name = new_log.get('service_name', '?')
     timestamp = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
-    message = data.get('message', '?')
+    message = new_log.get('message', '?')
 
     return jsonify({
         "service_name": service_name,
