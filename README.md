@@ -45,3 +45,7 @@ Sonatus CoderByte Software Engineer Interview
 *Note: I used the example directly and when adding a start/end time, please include the T and Z as described in the example problem*
 *E.g. curl http://127.0.0.1:5000/logs?service_name=auth-service&start=2025-04-03T18:33:00Z&end=2025-04-03T18:40:59Z*
 *The above will search for logs with the service_name auth-service and logs made between the times 6:33pm-6:40pm made on 04/03/2025*
+5. Can also insert values using the following: `python DistributedLogAggregate.py` which will POST using the following data
+`payload = {"service_name": "auth-service",
+"timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+"message": "User login successful"`
