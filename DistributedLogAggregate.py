@@ -22,6 +22,7 @@ def main():
                "message": "User login successful"
                }
     response = requests.post(url, json=payload)
+    print(response.json())
 
     
 

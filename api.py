@@ -1,13 +1,17 @@
 from flask import Flask, jsonify, request
 import subprocess
 from datetime import datetime
+import time
 
 app = Flask(__name__)
+
+logs = []
+
+
 #https://medium.com/@asvinjangid.kumar/creating-your-own-api-in-python-a-beginners-guide-59f4dd18d301
 @app.route('/logs', methods=['GET'])
 def get_logs():
-    result = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
-    return jsonify({'date': result.strip()})
+    return jsonify({"logs": logs})
 
 @app.route('/logs', methods=['POST'])
 def post_logs():
@@ -19,6 +23,13 @@ def post_logs():
     service_name = new_log.get('service_name', '?')
     timestamp = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
     message = new_log.get('message', '?')
+
+    log_entry = {
+        "service_name": service_name,
+        "timestamp": timestamp,
+        "message": message
+    }
+    logs.append(log_entry)
 
     return jsonify({
         "service_name": service_name,
